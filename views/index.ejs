@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <style>
+    	#site {
+    		margin-top: 20px;
+    	}
+    </style>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  </head>
+
+  <body>
+    <div class="container" id='site'>
+      <div class='row'>
+        <div class='span12'>
+          <div class="btn-toolbar">
+            <div class="btn-group lights">
+            </div>
+          </div>
+
+          <div class="progress progress-danger progress-striped progress-r">
+            <div class="bar" style="width: 50%"></div>
+          </div>
+          <div class="progress progress-success progress-striped progress-g">
+            <div class="bar" style="width: 50%"></div>
+          </div>
+          <div class="progress progress-info progress-striped progress-b">
+            <div class="bar" style="width: 50%"></div>
+          </div>
+
+          <button class='btn btn-update'>Update</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+    <script>
+      var r = 50,
+          g = 50,
+          b = 50;
+
+      $.getJSON('http://kzw.dk:1337/getStatus/1', status);
+      $.getJSON('http://kzw.dk:1337/getStatus/2', status);
+      $.getJSON('http://kzw.dk:1337/getStatus/3', status);
+
+      function status(data){
+        console.log(data);
+        $(".lights").append('<button data-id="' + data.name.substr(data.name.length-1,1) + '" class="btn ' + (data.state.on ? "" : "btn-inverse") + '">' + data.name + '</button>');
+      }
+
+      function update(data){
+        console.log(data);
+
+        $(".btn-group .btn").each(function(){
+          if(parseInt($(this).attr("data-id")) == data.id)
+          {
+            $(this).toggleClass("btn-inverse");
+          }
+        });
+      }
+
+      $(".btn-group").on("click", ".btn",function(){
+        console.log($(this).attr("data-id"));
+
+        if($(this).hasClass("btn-inverse"))
+        {
+          $.getJSON('http://kzw.dk:1337/on/' + $(this).attr("data-id"), update);
+        }
+        else
+        {
+          $.getJSON('http://kzw.dk:1337/off/' + $(this).attr("data-id"), update);          
+        }
+      });
+
+      $(".progress").click(function(e){
+        var t = $(this);
+        var d = Math.round(e.offsetX/t.width()*100);
+
+        if(t.hasClass("progress-r")) {
+          r = d;
+          $(this).find(".bar").css("width", r + "%");
+        }
+        else if(t.hasClass("progress-g")) {
+          g = d;
+          $(this).find(".bar").css("width", g + "%");
+        }
+        else if(t.hasClass("progress-b")) {
+          b = d;
+          $(this).find(".bar").css("width", b + "%");
+        }
+      });
+
+      $(".btn-update").click(function(){
+        $(".btn-group .btn").each(function(){
+          if(!$(this).hasClass("btn-inverse")) {
+            $.post('http://kzw.dk:1337/setRGB/' + $(this).attr("data-id"), { 
+              r: Math.round(r*2.5),
+              g: Math.round(g*2.5),
+              b: Math.round(b*2.5)
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

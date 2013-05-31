@@ -1,0 +1,10 @@
+{
+    "name": "node-hue-app"
+  , "version": "0.0.2"
+  , "private": true
+  , "dependencies": {
+      "underscore": ""
+    , "express" : ""
+    , "ejs-locals": ""
+  }
+}
