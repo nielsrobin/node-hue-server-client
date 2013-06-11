@@ -1,4 +1,4 @@
 node-hue-server-client
 ======================
 
-uses node-hue-api to provide a simple web ui to hue.
+This is just a simple UI written in node.js, express and underscore to give me access to my node-hue-api middleware API.
